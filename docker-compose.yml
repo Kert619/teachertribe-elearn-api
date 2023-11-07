@@ -1,0 +1,51 @@
+version: '3.8'
+
+volumes:
+  db-data:
+
+services:
+  nginx:
+    container_name: nginx
+    build: 
+      context: .
+      dockerfile: ./dockerfiles/nginx.dockerfile
+    ports:
+      - "8000:80"
+    volumes:
+      - ./src:/var/www/html
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - php
+      - mysql
+  php:
+    container_name: php
+    build: 
+      context: .
+      dockerfile: dockerfiles/php.dockerfile
+    volumes:
+      - ./src:/var/www/html
+    
+  mysql:
+    container_name: mysql
+    image: mysql:8.2.0
+    ports:
+      - "4306:3306"
+    volumes:
+      - db-data:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=secret
+  composer:
+    container_name: composer
+    build: 
+      context: ./dockerfiles
+      dockerfile: composer.dockerfile
+    volumes:
+      - ./src:/var/www/html
+  artisan:
+    container_name: artisan
+    build: 
+      context: .
+      dockerfile: ./dockerfiles/php.dockerfile
+    volumes:
+      - ./src:/var/www/html
+    entrypoint: ["php", "/var/www/html/artisan"]
