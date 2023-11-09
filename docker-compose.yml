@@ -1,11 +1,9 @@
 version: "3.8"
 
-volumes:
-  db-data:
-
 services:
-  api-nginx:
-    container_name: api-nginx
+  nginx:
+    container_name: nginx-api
+    image: teachertribe-elearn-api-nginx
     build:
       context: .
       dockerfile: ./dockerfiles/nginx.dockerfile
@@ -13,39 +11,25 @@ services:
       - "8000:80"
     volumes:
       - ./src:/var/www/html
-      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
     depends_on:
-      - api-php
-      - api-mysql
-  api-php:
-    container_name: api-php
+      - php
+      - mysql
+  php:
+    container_name: php
+    image: teachertribe-elearn-api-php
     build:
       context: .
       dockerfile: ./dockerfiles/php.dockerfile
     volumes:
       - ./src:/var/www/html
+      - /var/www/html/vendor
 
-  api-mysql:
-    container_name: api-mysql
+  mysql:
+    container_name: mysql
     image: mysql:8.2.0
     ports:
       - "4306:3306"
     volumes:
-      - db-data:/var/lib/mysql
+      - ./mysql:/var/lib/mysql
     environment:
       - MYSQL_ROOT_PASSWORD=secret
-  api-composer:
-    container_name: api-composer
-    build:
-      context: ./dockerfiles
-      dockerfile: composer.dockerfile
-    volumes:
-      - ./src:/var/www/html
-  api-artisan:
-    container_name: api-artisan
-    build:
-      context: .
-      dockerfile: ./dockerfiles/php.dockerfile
-    volumes:
-      - ./src:/var/www/html
-    entrypoint: ["php", "/var/www/html/artisan"]
