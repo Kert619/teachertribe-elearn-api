@@ -2,16 +2,23 @@ FROM php:8.2-fpm
 
 WORKDIR /var/www/html
 
-RUN chown -R www-data:www-data /var/www/html
+RUN docker-php-ext-install pdo pdo_mysql
 
-COPY src .
+RUN apt-get update && apt-get install zip unzip
 
-RUN apt-get update && apt-get install -y \
-    libzip-dev \
-    zip
-
-RUN docker-php-ext-install pdo pdo_mysql zip 
+ENV COMPOSER_ALLOW_SUPERUSER=1
 
 COPY --from=composer:2.6.5 /usr/bin/composer /usr/bin/composer
 
-RUN composer install --no-plugins --no-scripts
+COPY ./src/composer.* ./
+
+RUN composer install --no-scripts --no-interaction
+
+COPY ./src .
+
+RUN composer dump-autoload
+
+RUN chown -R www-data:www-data /var/www/html
+
+
+

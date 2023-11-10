@@ -33,3 +33,12 @@ services:
       - ./mysql:/var/lib/mysql
     environment:
       - MYSQL_ROOT_PASSWORD=secret
+
+  composer:
+    container_name: composer
+    image: teachertribe-elearn-api-composer
+    build:
+      context: .
+      dockerfile: ./dockerfiles/composer.dockerfile
+    volumes:
+      - ./src:/var/www/html
