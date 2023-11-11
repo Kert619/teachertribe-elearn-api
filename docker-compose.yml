@@ -1,9 +1,9 @@
 version: "3.8"
 
 services:
-  nginx:
-    container_name: nginx-api
-    image: teachertribe-elearn-api-nginx
+  backend-nginx:
+    container_name: backend-nginx
+    image: teachertribe-elearn-api-backend-nginx
     build:
       context: .
       dockerfile: ./dockerfiles/nginx.dockerfile
@@ -12,14 +12,14 @@ services:
     volumes:
       - ./src:/var/www/html
     depends_on:
-      - php
+      - laravel
       - mysql
-  php:
-    container_name: php
-    image: teachertribe-elearn-api-php
+  laravel:
+    container_name: laravel
+    image: teachertribe-elearn-api-laravel
     build:
       context: .
-      dockerfile: ./dockerfiles/php.dockerfile
+      dockerfile: ./dockerfiles/laravel.dockerfile
     volumes:
       - ./src:/var/www/html
       - /var/www/html/vendor
@@ -36,9 +36,8 @@ services:
 
   composer:
     container_name: composer
-    image: teachertribe-elearn-api-composer
-    build:
-      context: .
-      dockerfile: ./dockerfiles/composer.dockerfile
+    image: composer:2.6.5
+    working_dir: /var/www/html
     volumes:
       - ./src:/var/www/html
+    entrypoint: ["composer"]
