@@ -41,4 +41,8 @@ trait HasRole{
     public function isAdmin(){
        return $this->roles->contains('code', 'admin');
     }
+
+    public function isStudent(){
+        return $this->roles->contains('code', 'student');
+    }
 }

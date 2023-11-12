@@ -21,9 +21,9 @@ class CourseController extends Controller
         $courses = null;
 
         if($request->user()->hasRole('student')){
-            $courses = $request->user()->studentClassrooms->first()->courses()->with(['phases', 'classrooms'])->get();
+            $courses = $request->user()->studentClassrooms->first()->courses()->get();
         } else{
-            $courses = Course::with(['phases', 'classrooms'])->get();
+            $courses = Course::all();
         }
 
         return CourseResource::collection($courses);
@@ -40,8 +40,6 @@ class CourseController extends Controller
             'name' => $request->name,
         ]);
 
-        $course->load(['phases', 'classrooms' ,'phases.levels', 'phases.quizzes', 'phases.quizzes.questions', 'phases.quizzes.questions.answers']);
-
         return $this->success(new CourseResource($course), 'New course has been created');
     }
 
@@ -56,7 +54,6 @@ class CourseController extends Controller
             }
         }
 
-        $course->load(['phases', 'classrooms' ,'phases.levels', 'phases.quizzes', 'phases.quizzes.questions', 'phases.quizzes.questions.answers']);
         return new CourseResource($course);
     }
 
@@ -71,7 +68,6 @@ class CourseController extends Controller
             'name' => $request->name
         ]);
 
-        $course->load(['phases', 'classrooms' ,'phases.levels', 'phases.quizzes', 'phases.quizzes.questions', 'phases.quizzes.questions.answers']);
         return $this->success(new CourseResource($course), 'Role has been updated');
     }
 
@@ -85,15 +81,42 @@ class CourseController extends Controller
     }
 
     public function getByName(Request $request){
-        $courseName = $request->course;
-        $course = Course::with(['phases', 'classrooms' ,'phases.levels', 'phases.quizzes', 'phases.quizzes.questions', 'phases.quizzes.questions.answers'])->where('name', $courseName)->firstOrFail();
+        $isStudent = $request->user()->hasRole('student');
+        $levels_passed = $request->user()->levels;
 
-        if($request->user()->hasRole('student')){
+        $courseName = $request->course;
+        
+        $course = Course::with(['phases', 'phases.levels', 'phases.quizzes'])->where('name', $courseName)->firstOrFail();
+        if(!$course) return $this->error(null, 'Course not found', 404);
+
+        
+        if($isStudent){
             if(!$request->user()->studentClassrooms->first()->courses()->find($course->id)){
                 return $this->error(null, 'Course not found', 404);
             }
         }
 
+        $is_previous_level_passed = true;
+
+        foreach($course->phases as $phase){
+            $phase->levels->each(function ($level) use ($levels_passed, &$is_previous_level_passed, $isStudent) {
+                $level->is_passed = !!$levels_passed->find($level->id);
+                $level->is_unlocked = false;
+
+                if($level->is_passed){
+                    $level->is_unlocked = true;
+                } elseif(!$level->is_passed && $is_previous_level_passed) {
+                    $level->is_unlocked = true;
+                    $is_previous_level_passed = false;
+                }
+
+                if(!$isStudent) {
+                    $level->is_passed = true;
+                    $level->is_unlocked = true;
+                }
+            });
+        }
+        
         return new CourseResource($course);
     }
 }
