@@ -6,11 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreCourseRequest;
 use App\Http\Requests\UpdateCourseRequest;
 use App\Http\Resources\CourseResource;
-use App\Http\Resources\UserResource;
 use App\Models\Course;
 use App\Traits\HttpResponses;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 
 class CourseController extends Controller
 {
@@ -23,18 +21,10 @@ class CourseController extends Controller
         $courses = null;
 
         if($request->user()->hasRole('student')){
-            $courses = $request->user()->studentClassrooms->first()->courses()->with(['phases', 'classrooms' ,'phases.levels', 'phases.quizzes', 'phases.quizzes.questions', 'phases.quizzes.questions.answers'])->get();
+            $courses = $request->user()->studentClassrooms->first()->courses()->with(['phases', 'classrooms'])->get();
         } else{
-            $courses = Course::with(['phases', 'classrooms' ,'phases.levels', 'phases.quizzes', 'phases.quizzes.questions', 'phases.quizzes.questions.answers'])->get();
+            $courses = Course::with(['phases', 'classrooms'])->get();
         }
-
-        $courses->each(function ($course){
-            $course->phases->each(function ($phase) {
-                $phase->levels->each(function ($level){
-                    $level->is_passed = !!auth()->user()->levels()->find($level->id);
-                });
-            });
-        });
 
         return CourseResource::collection($courses);
     }

@@ -1,4 +1,4 @@
-# fly.toml app configuration file generated for teachertribe-elearn-api on 2023-10-31T08:29:57+08:00
+# fly.toml app configuration file generated for teachertribe-elearn-api on 2023-11-11T17:38:30+08:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
@@ -10,7 +10,7 @@ console_command = "php /var/www/html/artisan tinker"
 [build]
   [build.args]
     NODE_VERSION = "18"
-    PHP_VERSION = "8.2"
+    PHP_VERSION = "8.0"
 
 [env]
   APP_ENV = "production"
@@ -34,5 +34,5 @@ console_command = "php /var/www/html/artisan tinker"
   processes = ["app"]
 
 [mounts]
-source="storage_vol"
-destination="/var/www/html/storage"
+  source="storage_vol"
+  destination="/var/www/html/storage"

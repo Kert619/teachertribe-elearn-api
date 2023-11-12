@@ -5,7 +5,7 @@
 # Valid version values are PHP 7.4+
 ARG PHP_VERSION=8.2
 ARG NODE_VERSION=18
-FROM fideloper/fly-laravel:${PHP_VERSION} as base
+FROM fideloper/fly-laravel:8.2 as base
 
 # PHP_VERSION needs to be repeated here
 # See https://docs.docker.com/engine/reference/builder/#understand-how-arg-and-from-interact

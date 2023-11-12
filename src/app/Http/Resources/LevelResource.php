@@ -20,7 +20,6 @@ class LevelResource extends JsonResource
             'description' => $this->description,
             'initial_output' => $this->initial_output,
             'expected_output' => $this->expected_output,
-            'is_passed' => $this->is_passed,
             'phase' => new PhaseResource($this->whenLoaded('phase'))
         ];
     }

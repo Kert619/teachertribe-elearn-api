@@ -8,7 +8,6 @@ use App\Http\Requests\AssignStudentsRequest;
 use App\Http\Requests\StoreClassroomRequest;
 use App\Http\Requests\UpdateClassroomRequest;
 use App\Http\Resources\ClassroomResource;
-use App\Http\Resources\UserResource;
 use App\Models\Classroom;
 use App\Models\Role;
 use App\Models\User;
