@@ -22,7 +22,8 @@ class UserResource extends JsonResource
             'created_by' => new UserResource($this->whenLoaded('user')),
             'created_users' => UserResource::collection($this->whenLoaded('users')),
             'teacherClassrooms' => ClassroomResource::collection($this->whenLoaded('classrooms')),
-            'studentClassrooms' => ClassroomResource::collection($this->whenLoaded('studentClassrooms'))
+            'studentClassrooms' => ClassroomResource::collection($this->whenLoaded('studentClassrooms')),
+            'levels' => LevelResource::collection($this->whenLoaded('levels'))
         ];
     }
 }

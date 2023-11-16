@@ -26,7 +26,7 @@ class ClassroomController extends Controller
     {
         
 
-        $classroom = Classroom::with(['courses','students','user', 'courses.phases'])->whereBelongsTo($request->user())->get();
+        $classroom = Classroom::with(['courses','students','user', 'courses.phases', 'courses.phases.levels', 'students.levels'])->whereBelongsTo($request->user())->get();
 
         return ClassroomResource::collection($classroom);
     }
@@ -43,7 +43,7 @@ class ClassroomController extends Controller
             'name' => $request->name,
         ]);
 
-        $classroom->load(['courses', 'user','students', 'courses.phases']); 
+        $classroom->load(['courses', 'user','students', 'courses.phases', 'courses.phases.levels', 'students.levels']); 
         return $this->success(new ClassroomResource($classroom), 'New classroom has been added');
     }
 
@@ -52,7 +52,7 @@ class ClassroomController extends Controller
      */
     public function show(Classroom $classroom)
     {
-        $classroom->load(['courses', 'students', 'user', 'courses.phases']);
+        $classroom->load(['courses', 'students', 'user', 'courses.phases', 'courses.phases.levels', 'students.levels']);
         return new ClassroomResource($classroom);
     }
 
@@ -67,7 +67,7 @@ class ClassroomController extends Controller
             'name' => $request->name
         ]);
 
-        $classroom->load(['courses', 'students', 'user', 'courses.phases']);
+        $classroom->load(['courses', 'students', 'user', 'courses.phases', 'courses.phases.levels', 'students.levels']);
         return $this->success(new ClassroomResource($classroom), 'Classroom has been updated');
     }
 
@@ -85,14 +85,14 @@ class ClassroomController extends Controller
 
         $classroom->courses()->attach($validated['courses']);
 
-        $classroom->load(['courses', 'students', 'user', 'courses.phases']);
+        $classroom->load(['courses', 'students', 'user', 'courses.phases', 'courses.phases.levels', 'students.levels']);
 
         return $this->success(new ClassroomResource($classroom), 'Courses has been assigned to class');
     }
 
     public function getByName(Request $request){
         $classroomName = $request->classroom;
-        $classroom = Classroom::with(['courses', 'students', 'user', 'courses.phases'])->where('name', $classroomName)->firstOrFail();
+        $classroom = Classroom::with(['courses', 'students', 'user', 'courses.phases', 'courses.phases.levels', 'students.levels'])->where('name', $classroomName)->firstOrFail();
 
         return new ClassroomResource($classroom);
     }
@@ -126,7 +126,7 @@ class ClassroomController extends Controller
 
         //  ASSIGN STUDENTS TO THIS CLASSROM
          $classroom->students()->attach(array_column($insertedStudents->toArray(), 'id'));
-         $classroom->load(['courses', 'user','students']); 
+         $classroom->load(['courses', 'students', 'user', 'courses.phases', 'courses.phases.levels', 'students.levels']); 
          return $this->success(new ClassroomResource($classroom), 'New students inserted');
     }
 }
