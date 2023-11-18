@@ -8,6 +8,7 @@ use App\Http\Requests\AssignStudentsRequest;
 use App\Http\Requests\StoreClassroomRequest;
 use App\Http\Requests\UpdateClassroomRequest;
 use App\Http\Resources\ClassroomResource;
+use App\Mail\AssignStudents;
 use App\Models\Classroom;
 use App\Models\Role;
 use App\Models\User;
@@ -15,6 +16,7 @@ use App\Traits\HttpResponses;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 
 class ClassroomController extends Controller
 {
@@ -127,6 +129,20 @@ class ClassroomController extends Controller
         //  ASSIGN STUDENTS TO THIS CLASSROM
          $classroom->students()->attach(array_column($insertedStudents->toArray(), 'id'));
          $classroom->load(['courses', 'students', 'user', 'courses.phases', 'courses.phases.levels', 'students.levels']); 
+
+         foreach ($validated['students'] as $student){
+            $data = [
+                'name' => $student['name'],
+                'email' => $student['email'],
+                'password' => $student['password'],
+                'classroomName' => $classroom->name
+            ];
+
+            if(!$student['sendEmail']) continue;
+            
+            Mail::to($student['email'])->send(new AssignStudents($data));
+         }
+
          return $this->success(new ClassroomResource($classroom), 'New students inserted');
     }
 }

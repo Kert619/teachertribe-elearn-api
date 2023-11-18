@@ -25,7 +25,8 @@ class AssignStudentsRequest extends FormRequest
             'students' => ['required', 'array'],
             'students.*.name' => ['required', 'max:255'],
             'students.*.email' => ['required', 'email', 'unique:users,email'],
-            'students.*.password' => ['required','min:8'],
+            'students.*.password' => ['required', 'min:8'],
+            'students.*.sendEmail' => ['required']
         ];
     }
 
@@ -39,7 +40,8 @@ class AssignStudentsRequest extends FormRequest
             'students.*.email.email' => 'All email must be a valid email.',
             'students.*.email.unique' => 'All email must be unique.',
             'students.*.password.required' => 'All password is required.',
-            'students.*.password.min' => 'All password must be atleast 8 characters long.'
+            'students.*.password.min' => 'All password must be atleast 8 characters long.',
+            'students.*.sendEmail.required' => 'All send email field is required.',
         ];
     }
 }
