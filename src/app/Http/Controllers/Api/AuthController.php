@@ -17,21 +17,13 @@ class AuthController extends Controller
         $request->validated($request->all());
 
         if(!Auth::attempt(['email' => $request->email, 'password' => $request->password])){
-            return $this->error(null, 'Credentials do not match our records', 401);
+            return $this->error(null, 'Credentials do not match our records', 400);
         }
 
         $user = User::where('email', $request->email)->first();
 
         return $this->success([
-            'user' => [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-            ],
             'token' => $user->createToken('API TOKEN OF ' . $user->name)->plainTextToken,
-            'roles' => $user->roles->pluck('code')->toArray(),
-            'permissions' => collect($user->permissions())->pluck('code')->toArray(),
-            'levels_passed' => $user->levels
         ], 'Login success');
     }
 
@@ -49,7 +41,6 @@ class AuthController extends Controller
             ],
             'roles' => $request->user()->roles->pluck('code')->toArray(),
             'permissions' => collect($request->user()->permissions())->pluck('code')->toArray(),
-            'levels_passed' => $request->user()->levels
         ]);
     }
 }
