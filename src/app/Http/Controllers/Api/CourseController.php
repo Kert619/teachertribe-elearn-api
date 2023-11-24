@@ -21,9 +21,9 @@ class CourseController extends Controller
         $courses = null;
 
         if($request->user()->hasRole('student')){
-            $courses = $request->user()->studentClassrooms->first()->courses()->get();
+            $courses = $request->user()->studentClassrooms->first()->courses()->with(['phases', 'phases.levels', 'phases.quizzes'])->get();
         } else{
-            $courses = Course::all();
+            $courses = Course::with(['phases', 'phases.levels', 'phases.quizzes'])->get();
         }
 
         return CourseResource::collection($courses);
