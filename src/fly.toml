@@ -1,4 +1,4 @@
-# fly.toml app configuration file generated for teachertribe-elearn-api on 2023-11-18T15:27:44+08:00
+# fly.toml app configuration file generated for teachertribe-elearn-api on 2023-11-27T10:06:15+08:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
@@ -31,7 +31,7 @@ console_command = "php /var/www/html/artisan tinker"
   SESSION_DRIVER = "cookie"
   SESSION_SECURE_COOKIE = "true"
 
-[mounts]
+[[mounts]]
   source = "storage_vol"
   destination = "/var/www/html/storage"
   auto_extend_size_threshold = 0
